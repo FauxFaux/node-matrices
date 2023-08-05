@@ -1,12 +1,12 @@
 module.exports = {
   env: {
-    es6: true,
-    node: true,
     browser: true,
+    es2021: true,
+    node: true,
   },
-  extends: ["eslint:recommended", "plugin:mocha/recommended", "prettier"],
+  extends: ['eslint:recommended', 'plugin:mocha/recommended', 'prettier'],
   rules: {
-    "mocha/no-mocha-arrows": "off",
+    'mocha/no-mocha-arrows': 'off',
   },
-  plugins: ["mocha"],
+  plugins: ['mocha'],
 };

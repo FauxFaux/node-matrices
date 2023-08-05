@@ -2,7 +2,16 @@
 const expect = require('chai').expect;
 const Matrix = require('.');
 describe('node-matrices', () => {
-  let m, smallBlock, smallBlockConstant, notSquare, symmetric, skewSymmetric, upperTriangular, lowerTriangular, diagonal, id,
+  let m,
+    smallBlock,
+    smallBlockConstant,
+    notSquare,
+    symmetric,
+    skewSymmetric,
+    upperTriangular,
+    lowerTriangular,
+    diagonal,
+    id,
     zeros;
   before(() => {
     m = new Matrix([1, 2, 3], [4, 5, 6], [7, 8, 9]);
@@ -13,7 +22,11 @@ describe('node-matrices', () => {
     skewSymmetric = new Matrix([0, 2], [-2, 0]);
     upperTriangular = new Matrix([1, 2], [0, 4]);
     lowerTriangular = new Matrix([1, 0], [55, 8]);
-    diagonal = new Matrix([6, 0, 0], [0, 1, 0], [0, 0, Number.MAX_SAFE_INTEGER]);
+    diagonal = new Matrix(
+      [6, 0, 0],
+      [0, 1, 0],
+      [0, 0, Number.MAX_SAFE_INTEGER],
+    );
     id = new Matrix([1, 0, 0], [0, 1, 0], [0, 0, 1]);
     zeros = new Matrix([0, 0, 0], [0, 0, 0]);
   });
@@ -50,13 +63,19 @@ describe('node-matrices', () => {
       expect(m.omitColumn(1)).to.eql(new Matrix([1, 3], [4, 6], [7, 9]));
     });
     it('can combine blocks horizontally', () => {
-      expect(smallBlock.combineHorizontal(smallBlockConstant)).to.eql(new Matrix([1, 2, 5, 5], [3, 4, 5, 5]));
+      expect(smallBlock.combineHorizontal(smallBlockConstant)).to.eql(
+        new Matrix([1, 2, 5, 5], [3, 4, 5, 5]),
+      );
     });
     it('can combine blocks vertically', () => {
-      expect(smallBlock.combineVertical(smallBlockConstant)).to.eql(new Matrix([1, 2], [3, 4], [5, 5], [5, 5]));
+      expect(smallBlock.combineVertical(smallBlockConstant)).to.eql(
+        new Matrix([1, 2], [3, 4], [5, 5], [5, 5]),
+      );
     });
     it('can replace elements in a matrix', () => {
-      expect(m.replace(1, 2, 90)).to.eql(new Matrix([1, 2, 3], [4, 5, 90], [7, 8, 9]));
+      expect(m.replace(1, 2, 90)).to.eql(
+        new Matrix([1, 2, 3], [4, 5, 90], [7, 8, 9]),
+      );
     });
   });
   describe('matrix operations', () => {
@@ -75,19 +94,29 @@ describe('node-matrices', () => {
       expect(m.inverse).to.throw();
     });
     it('can add two matrices', () => {
-      expect(smallBlock.add(smallBlockConstant)).to.eql(new Matrix([6, 7], [8, 9]));
+      expect(smallBlock.add(smallBlockConstant)).to.eql(
+        new Matrix([6, 7], [8, 9]),
+      );
     });
     it('can subtract two matrices', () => {
-      expect(smallBlock.subtract(smallBlockConstant)).to.eql(new Matrix([-4, -3], [-2, -1]));
+      expect(smallBlock.subtract(smallBlockConstant)).to.eql(
+        new Matrix([-4, -3], [-2, -1]),
+      );
     });
     it('can multiply two matrices', () => {
-      expect(smallBlock.multiply(smallBlockConstant)).to.eql(new Matrix([15, 15], [35, 35]));
+      expect(smallBlock.multiply(smallBlockConstant)).to.eql(
+        new Matrix([15, 15], [35, 35]),
+      );
     });
     it('can multiply matrices by scalars', () => {
-      expect(m.scale(5)).to.eql(new Matrix([5, 10, 15], [20, 25, 30], [35, 40, 45]));
+      expect(m.scale(5)).to.eql(
+        new Matrix([5, 10, 15], [20, 25, 30], [35, 40, 45]),
+      );
     });
     it('can exponentiate matrices', () => {
-      expect(m.pow(3)).to.eql(new Matrix([468, 576, 684], [1062, 1305, 1548], [1656, 2034, 2412]));
+      expect(m.pow(3)).to.eql(
+        new Matrix([468, 576, 684], [1062, 1305, 1548], [1656, 2034, 2412]),
+      );
       expect(smallBlock.pow(-3)).to.eql(smallBlock.pow(3).inverse());
     });
   });

@@ -1,7 +1,7 @@
 'use strict';
 const _ = require('lodash');
 module.exports = class Matrix {
-  constructor () {
+  constructor() {
     let args = _.toArray(arguments);
     if (args.length === 1 && Array.isArray(args[0][0])) {
       args = args[0];
@@ -12,60 +12,78 @@ module.exports = class Matrix {
     this.data = args;
     Object.freeze(this);
   }
-  numRows () {
+  numRows() {
     return this.data.length;
   }
-  numColumns () {
+  numColumns() {
     return this.data[0].length;
   }
-  get (rowIndex, columnIndex) {
+  get(rowIndex, columnIndex) {
     return this.data[rowIndex] ? this.data[rowIndex][columnIndex] : undefined;
   }
-  getRow (rowIndex) {
+  getRow(rowIndex) {
     return new Matrix(this.data[rowIndex]);
   }
-  getColumn (columnIndex) {
-    return new Matrix(_.map(this.data, row => ([row[columnIndex]])));
+  getColumn(columnIndex) {
+    return new Matrix(_.map(this.data, (row) => [row[columnIndex]]));
   }
-  sliceRows (startIndex, endIndex) {
+  sliceRows(startIndex, endIndex) {
     return new Matrix(this.data.slice(startIndex, endIndex));
   }
-  sliceColumns (startIndex, endIndex) {
-    return new Matrix(this.data.map(row => (row.slice(startIndex, endIndex))));
+  sliceColumns(startIndex, endIndex) {
+    return new Matrix(this.data.map((row) => row.slice(startIndex, endIndex)));
   }
-  sliceBlock (startRowIndex, endRowIndex, startColumnIndex, endColumnIndex) {
-    return this.sliceRows(startRowIndex, endRowIndex).sliceColumns(startColumnIndex, endColumnIndex);
+  sliceBlock(startRowIndex, endRowIndex, startColumnIndex, endColumnIndex) {
+    return this.sliceRows(startRowIndex, endRowIndex).sliceColumns(
+      startColumnIndex,
+      endColumnIndex,
+    );
   }
-  omitRow (rowIndex) {
-    return new Matrix(_.filter(this.data, (value, index) => (index !== rowIndex)));
+  omitRow(rowIndex) {
+    return new Matrix(
+      _.filter(this.data, (value, index) => index !== rowIndex),
+    );
   }
-  omitColumn (columnIndex) {
-    return new Matrix(this.data.map(row => (row.filter((value, index) => (index !== columnIndex)))));
+  omitColumn(columnIndex) {
+    return new Matrix(
+      this.data.map((row) =>
+        row.filter((value, index) => index !== columnIndex),
+      ),
+    );
   }
-  combineHorizontal (otherMatrix) {
+  combineHorizontal(otherMatrix) {
     if (this.numRows() !== otherMatrix.numRows()) {
-      throw new Error('Cannot horizontally combine matrices with different numbers of rows');
+      throw new Error(
+        'Cannot horizontally combine matrices with different numbers of rows',
+      );
     }
-    return new Matrix(this.data.map((row, index) => (row.concat(otherMatrix.data[index]))));
+    return new Matrix(
+      this.data.map((row, index) => row.concat(otherMatrix.data[index])),
+    );
   }
-  combineVertical (otherMatrix) {
+  combineVertical(otherMatrix) {
     if (this.numColumns() !== otherMatrix.numColumns()) {
-      throw new Error('Cannot vertically combine matrices with different numbers of columns');
+      throw new Error(
+        'Cannot vertically combine matrices with different numbers of columns',
+      );
     }
     return new Matrix(this.data.concat(otherMatrix.data));
   }
-  replace (rowIndex, columnIndex, value) {
+  replace(rowIndex, columnIndex, value) {
     const newData = _.cloneDeep(this.data);
     newData[rowIndex][columnIndex] = value;
     return new Matrix(newData);
   }
-  transpose () {
+  transpose() {
     return new Matrix(_.unzip(this.data));
   }
-  _cofactorEntry (rowIndex, columnIndex) {
-    return ((rowIndex + columnIndex) % 2 ? -1 : 1) * this.omitRow(rowIndex).omitColumn(columnIndex).determinant();
+  _cofactorEntry(rowIndex, columnIndex) {
+    return (
+      ((rowIndex + columnIndex) % 2 ? -1 : 1) *
+      this.omitRow(rowIndex).omitColumn(columnIndex).determinant()
+    );
   }
-  determinant () {
+  determinant() {
     if (!this.isSquare()) {
       throw new Error('Cannot compute the determinant of a non-square matrix');
     }
@@ -81,18 +99,22 @@ module.exports = class Matrix {
     }
     return sum;
   }
-  _cofactor () {
+  _cofactor() {
     if (!this.isSquare()) {
       throw new Error('Cannot compute the cofactor of a non-square matrix');
     }
-    return new Matrix(_.times(this.numRows(), rowIndex => _.times(this.numColumns(), columnIndex => (
-      this._cofactorEntry(rowIndex, columnIndex)
-    ))));
+    return new Matrix(
+      _.times(this.numRows(), (rowIndex) =>
+        _.times(this.numColumns(), (columnIndex) =>
+          this._cofactorEntry(rowIndex, columnIndex),
+        ),
+      ),
+    );
   }
-  adjugate () {
+  adjugate() {
     return this._cofactor().transpose();
   }
-  inverse () {
+  inverse() {
     if (!this.isSquare()) {
       throw new Error('Cannot compute the inverse of a non-square matrix');
     }
@@ -102,40 +124,55 @@ module.exports = class Matrix {
     }
     return this.adjugate().scale(1 / det);
   }
-  _map (iteratee) {
-    return new Matrix(this.data.map(row => (row.map(iteratee))));
+  _map(iteratee) {
+    return new Matrix(this.data.map((row) => row.map(iteratee)));
   }
-  _values () {
+  _values() {
     return _.concat(...this.data);
   }
-  add (otherMatrix) {
-    if (this.numRows() !== otherMatrix.numRows() || this.numColumns() !== otherMatrix.numColumns()) {
+  add(otherMatrix) {
+    if (
+      this.numRows() !== otherMatrix.numRows() ||
+      this.numColumns() !== otherMatrix.numColumns()
+    ) {
       throw new Error('Cannot add two matrices with different sizes');
     }
-    return new Matrix(this.data.map((row, rowIndex) => (row.map((value, columnIndex) => (
-        this.get(rowIndex, columnIndex) + otherMatrix.get(rowIndex, columnIndex)
-    )))));
+    return new Matrix(
+      this.data.map((row, rowIndex) =>
+        row.map(
+          (value, columnIndex) =>
+            this.get(rowIndex, columnIndex) +
+            otherMatrix.get(rowIndex, columnIndex),
+        ),
+      ),
+    );
   }
-  subtract (otherMatrix) {
+  subtract(otherMatrix) {
     return otherMatrix.scale(-1).add(this);
   }
-  _baseMultiply (columnMatrix) {
-    return _.sum(_.map(this.data[0], (value, index) => (value * columnMatrix.get(index, 0))));
+  _baseMultiply(columnMatrix) {
+    return _.sum(
+      _.map(this.data[0], (value, index) => value * columnMatrix.get(index, 0)),
+    );
   }
-  multiply (otherMatrix) {
+  multiply(otherMatrix) {
     if (this.numColumns() !== otherMatrix.numRows()) {
       throw new Error('Incompatible dimensions for multiplication');
     }
-    return new Matrix(_.times(this.numRows(), rowIndex => (
-      _.times(otherMatrix.numColumns(), columnIndex => (
-        this.getRow(rowIndex)._baseMultiply(otherMatrix.getColumn(columnIndex))))
-      )
-    ));
+    return new Matrix(
+      _.times(this.numRows(), (rowIndex) =>
+        _.times(otherMatrix.numColumns(), (columnIndex) =>
+          this.getRow(rowIndex)._baseMultiply(
+            otherMatrix.getColumn(columnIndex),
+          ),
+        ),
+      ),
+    );
   }
-  scale (scalar) {
-    return this._map(value => (scalar * value));
+  scale(scalar) {
+    return this._map((value) => scalar * value);
   }
-  pow (exponent) {
+  pow(exponent) {
     if (!this.isSquare()) {
       throw new Error('Cannot raise a non-square matrix to an exponent');
     }
@@ -154,19 +191,19 @@ module.exports = class Matrix {
     const halfExponent = this.pow(exponent / 2);
     return halfExponent.multiply(halfExponent);
   }
-  equals (otherMatrix) {
+  equals(otherMatrix) {
     return _.isEqual(this, otherMatrix);
   }
-  isSquare () {
+  isSquare() {
     return this.numRows() === this.numColumns();
   }
-  isSymmetric () {
+  isSymmetric() {
     return this.transpose().equals(this);
   }
-  isSkewSymmetric () {
+  isSkewSymmetric() {
     return this.transpose().scale(-1).equals(this);
   }
-  isUpperTriangular () {
+  isUpperTriangular() {
     for (let i = 0; i < this.numRows(); i++) {
       for (let j = 0; j < i; j++) {
         if (this.get(i, j)) {
@@ -176,25 +213,31 @@ module.exports = class Matrix {
     }
     return true;
   }
-  isLowerTriangular () {
+  isLowerTriangular() {
     return this.transpose().isUpperTriangular();
   }
-  isDiagonal () {
+  isDiagonal() {
     return this.isUpperTriangular() && this.isLowerTriangular();
   }
-  isIdentity () {
+  isIdentity() {
     return this.isSquare() && Matrix.identity(this.numRows()).equals(this);
   }
-  isNonZero () {
+  isNonZero() {
     return _.some(this._values());
   }
-  isSingular () {
+  isSingular() {
     return this.determinant() === 0;
   }
-  static identity (size) {
-    return new Matrix(_.times(size, rowIndex => (_.times(size, columnIndex => (rowIndex === columnIndex ? 1 : 0)))));
+  static identity(size) {
+    return new Matrix(
+      _.times(size, (rowIndex) =>
+        _.times(size, (columnIndex) => (rowIndex === columnIndex ? 1 : 0)),
+      ),
+    );
   }
-  static zeros (numRows, numColumns) {
-    return new Matrix(_.times(numRows, _.constant(_.times(numColumns, _.constant(0)))));
+  static zeros(numRows, numColumns) {
+    return new Matrix(
+      _.times(numRows, _.constant(_.times(numColumns, _.constant(0)))),
+    );
   }
 };
