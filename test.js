@@ -1,6 +1,7 @@
 'use strict';
-const expect = require('chai').expect;
-const Matrix = require('.');
+import { expect } from 'chai';
+import Matrix from './matrix.js';
+
 describe('node-matrices', () => {
   let m,
     smallBlock,

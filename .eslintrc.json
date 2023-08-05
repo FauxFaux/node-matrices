@@ -1,0 +1,13 @@
+{
+  "env": {
+    "es2021": true
+  },
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "extends": ["eslint:recommended", "plugin:mocha/recommended", "prettier"],
+  "rules": {
+    "mocha/no-mocha-arrows": "off"
+  },
+  "plugins": ["mocha"]
+}

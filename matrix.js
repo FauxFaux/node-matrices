@@ -1,6 +1,7 @@
 'use strict';
-const _ = require('lodash');
-module.exports = class Matrix {
+import _ from 'lodash';
+
+export default class Matrix {
   constructor() {
     let args = _.toArray(arguments);
     if (args.length === 1 && Array.isArray(args[0][0])) {
@@ -240,4 +241,4 @@ module.exports = class Matrix {
       _.times(numRows, _.constant(_.times(numColumns, _.constant(0)))),
     );
   }
-};
+}

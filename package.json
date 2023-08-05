@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "A simple and lightweight matrix library",
   "main": "matrix.js",
+  "type": "module",
   "scripts": {
-    "format": "prettier --write '*.js' '.*.js'",
+    "format": "prettier --write '*.js' '.*.json'",
     "test": "eslint . && mocha"
   },
   "repository": {
