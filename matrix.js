@@ -1,13 +1,25 @@
 'use strict';
-import _ from 'lodash';
+import _cloneDeep from 'lodash/cloneDeep.js';
+import _concat from 'lodash/concat.js';
+import _constant from 'lodash/constant.js';
+import _filter from 'lodash/filter.js';
+import _isEqual from 'lodash/isEqual.js';
+import _isInteger from 'lodash/isInteger.js';
+import _map from 'lodash/map.js';
+import _some from 'lodash/some.js';
+import _sum from 'lodash/sum.js';
+import _times from 'lodash/times.js';
+import _toArray from 'lodash/toArray.js';
+import _uniq from 'lodash/uniq.js';
+import _unzip from 'lodash/unzip.js';
 
 export default class Matrix {
   constructor() {
-    let args = _.toArray(arguments);
+    let args = _toArray(arguments);
     if (args.length === 1 && Array.isArray(args[0][0])) {
       args = args[0];
     }
-    if (_.uniq(_.map(args, 'length')).length !== 1) {
+    if (_uniq(_map(args, 'length')).length !== 1) {
       throw new Error('All rows must have the same length');
     }
     this.data = args;
@@ -26,7 +38,7 @@ export default class Matrix {
     return new Matrix(this.data[rowIndex]);
   }
   getColumn(columnIndex) {
-    return new Matrix(_.map(this.data, (row) => [row[columnIndex]]));
+    return new Matrix(_map(this.data, (row) => [row[columnIndex]]));
   }
   sliceRows(startIndex, endIndex) {
     return new Matrix(this.data.slice(startIndex, endIndex));
@@ -41,9 +53,7 @@ export default class Matrix {
     );
   }
   omitRow(rowIndex) {
-    return new Matrix(
-      _.filter(this.data, (value, index) => index !== rowIndex),
-    );
+    return new Matrix(_filter(this.data, (value, index) => index !== rowIndex));
   }
   omitColumn(columnIndex) {
     return new Matrix(
@@ -71,12 +81,12 @@ export default class Matrix {
     return new Matrix(this.data.concat(otherMatrix.data));
   }
   replace(rowIndex, columnIndex, value) {
-    const newData = _.cloneDeep(this.data);
+    const newData = _cloneDeep(this.data);
     newData[rowIndex][columnIndex] = value;
     return new Matrix(newData);
   }
   transpose() {
-    return new Matrix(_.unzip(this.data));
+    return new Matrix(_unzip(this.data));
   }
   _cofactorEntry(rowIndex, columnIndex) {
     return (
@@ -105,8 +115,8 @@ export default class Matrix {
       throw new Error('Cannot compute the cofactor of a non-square matrix');
     }
     return new Matrix(
-      _.times(this.numRows(), (rowIndex) =>
-        _.times(this.numColumns(), (columnIndex) =>
+      _times(this.numRows(), (rowIndex) =>
+        _times(this.numColumns(), (columnIndex) =>
           this._cofactorEntry(rowIndex, columnIndex),
         ),
       ),
@@ -129,7 +139,7 @@ export default class Matrix {
     return new Matrix(this.data.map((row) => row.map(iteratee)));
   }
   _values() {
-    return _.concat(...this.data);
+    return _concat(...this.data);
   }
   add(otherMatrix) {
     if (
@@ -152,8 +162,8 @@ export default class Matrix {
     return otherMatrix.scale(-1).add(this);
   }
   _baseMultiply(columnMatrix) {
-    return _.sum(
-      _.map(this.data[0], (value, index) => value * columnMatrix.get(index, 0)),
+    return _sum(
+      _map(this.data[0], (value, index) => value * columnMatrix.get(index, 0)),
     );
   }
   multiply(otherMatrix) {
@@ -161,8 +171,8 @@ export default class Matrix {
       throw new Error('Incompatible dimensions for multiplication');
     }
     return new Matrix(
-      _.times(this.numRows(), (rowIndex) =>
-        _.times(otherMatrix.numColumns(), (columnIndex) =>
+      _times(this.numRows(), (rowIndex) =>
+        _times(otherMatrix.numColumns(), (columnIndex) =>
           this.getRow(rowIndex)._baseMultiply(
             otherMatrix.getColumn(columnIndex),
           ),
@@ -177,7 +187,7 @@ export default class Matrix {
     if (!this.isSquare()) {
       throw new Error('Cannot raise a non-square matrix to an exponent');
     }
-    if (!_.isInteger(exponent)) {
+    if (!_isInteger(exponent)) {
       throw new Error('Cannot raise a matrix to a non-integer exponent');
     }
     if (exponent === 0) {
@@ -193,7 +203,7 @@ export default class Matrix {
     return halfExponent.multiply(halfExponent);
   }
   equals(otherMatrix) {
-    return _.isEqual(this, otherMatrix);
+    return _isEqual(this, otherMatrix);
   }
   isSquare() {
     return this.numRows() === this.numColumns();
@@ -224,21 +234,21 @@ export default class Matrix {
     return this.isSquare() && Matrix.identity(this.numRows()).equals(this);
   }
   isNonZero() {
-    return _.some(this._values());
+    return _some(this._values());
   }
   isSingular() {
     return this.determinant() === 0;
   }
   static identity(size) {
     return new Matrix(
-      _.times(size, (rowIndex) =>
-        _.times(size, (columnIndex) => (rowIndex === columnIndex ? 1 : 0)),
+      _times(size, (rowIndex) =>
+        _times(size, (columnIndex) => (rowIndex === columnIndex ? 1 : 0)),
       ),
     );
   }
   static zeros(numRows, numColumns) {
     return new Matrix(
-      _.times(numRows, _.constant(_.times(numColumns, _.constant(0)))),
+      _times(numRows, _constant(_times(numColumns, _constant(0)))),
     );
   }
 }
