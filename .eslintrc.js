@@ -1,30 +1,12 @@
 module.exports = {
-  rules: {
-    quotes: [
-      2,
-      'single'
-    ],
-    'linebreak-style': [
-      2,
-      'unix'
-    ],
-    semi: [
-      2,
-      'always'
-    ]
-  },
   env: {
     es6: true,
     node: true,
-    browser: true
+    browser: true,
   },
-  extends: 'eslint:recommended',
-  globals: {
-    'describe': true,
-    'it': true,
-    'before': true,
-    'beforeEach': true,
-    'after': true,
-    'afterEach': true
-  }
+  extends: ["eslint:recommended", "plugin:mocha/recommended", "prettier"],
+  rules: {
+    "mocha/no-mocha-arrows": "off",
+  },
+  plugins: ["mocha"],
 };
